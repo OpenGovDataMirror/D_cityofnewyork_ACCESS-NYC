@@ -1,0 +1,67 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<main class="color-light-background" id="content">
+  <form class="js-filtered-search" method="get" action="/">
+    {{ fn('do_action', 'wpml_add_language_form_field' ) }}
+
+    {# <header class="c-header flex-col color-dark-background mb-3">
+      <label class="type-small w-full mb-2" for="program-search-field">{{__('Showing results for', 'accessnyctheme')}}</label>
+
+      <div class="input-search w-full">
+        <input name="s" type="text" value="{{ query }}" id="program-search-field" data-js="wt-search" data-wt-search-key="Search Results" data-wt-search-data='[{"WT.oss": "{{ query }}", "WT.oss_r": "{{ posts|length }}"}]'>
+
+        <button class="btn-text input-search__submit" type="submit">
+          <svg class="icon icon-ui-search">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-ui-search"></use>
+
+          </svg><span class="sr-only">{{__('Submit', 'accessnyctheme')}}</span>
+        </button>
+      </div>
+    </header> #}
+
+    {% if alerts %}
+    <div class="p-2 screen-tablet:p-3">
+      {% for alert in alerts %}
+        {% set class = loop.last ? '' : 'mb-2 screen-tablet:mb-3' %}
+
+        {% include 'components/alert.twig' with {this: alert, class: class} only %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="wrap screen-desktop:layout-sidebar-small-gutter">
+      <aside>
+        <h2 class="type-h4">{{__('Filter Programs', 'accessnyctheme')}}:</h2>
+
+        {% include 'components/filter-search.twig' %}
+      </aside>
+
+      <div>
+        <div class="layout-gutter p-3 bg-grey-lightest mb-3">
+          {% if not posts | length %}
+          <h1 class="text-large">
+            {{__('Sorry, we couldn’t find anything matching your search.', 'accessnyctheme')}}
+
+            <br class="hidden screen-desktop:inline-block">
+
+            <a class="js-filter-reset" href="/?s={{ query }}">{{ __('Clear filters.', 'accessnyctheme' )}}</a>
+          </h1>
+          {% else %}
+            {# {% include 'partials/post-teaser.twig' %} #}
+            {% for post in posts %}
+              {% include 'components/card.twig' with {'post': post} only %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="sticky bottom-0 pointer-events-none z-10">
+    {% if alert_sitewide %}
+    {% include 'objects/alert-banner.twig' with {this: alert_sitewide, active: true} only %}
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

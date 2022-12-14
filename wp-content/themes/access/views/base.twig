@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="{{ language_code }}" dir="{{ direction }}" {% if is_print %}class="print-view"{% endif %}>
+  <head>
+    {% block html_head_container %}
+    {% include 'partials/head.twig' %}
+
+    {% block head %}
+    <meta name="theme-color" content="#FFFFFF">
+    <link rel="manifest" href="{{ theme.path }}/manifest.960190a2.json">
+    {% endblock %}
+
+    {% block scripts_head %}{% endblock %}
+
+    {% if schema %}
+    <script type="application/ld+json">
+      {{ schema }}
+    </script>
+    {% endif %}
+
+    {% endblock %}
+  </head>
+
+  <body>
+    {{ fn('wp_body_open') }}
+
+    <div class="page-wrapper">
+      <a class="sr-only sr-only-focusable" href="#content">{{ __('Skip to main content', 'accessnyctheme') }}</a>
+      {% block header %}
+        <header class="overflow-hidden">
+          <div class="color-mid-background flex justify-between py-1 px-3 print:block">
+            {% apply spaceless %}
+            <div class="flex-none">
+              <svg class="icon icon-logo-nyc">
+                <use xlink:href="#icon-logo-nyc"></use>
+              </svg>
+
+              <span class="text-xsmall px-1 text-grey-mid hidden screen-desktop:inline-block">
+                {{ __('Official website of the City of New York', 'accessnyctheme') }}
+              </span>
+            </div>
+            {% endapply %}
+
+            {% include 'objects/text-controller.twig' %}
+          </div>
+
+          {% include 'objects/navigation.twig' %}
+        </header>
+
+        {% include 'objects/mobile-nav.twig' %}
+
+        <div class='relative'>
+          {% include 'objects/search-box.twig' %}
+        </div>
+      {% endblock %}
+
+      {% block content %}{% endblock %}
+
+      <section class="color-dark-background layout-home-body">
+        <div>
+          <div class="mx-3">
+            <div class="h3">
+              {{ __('Stay updated on benefits', 'accessnyctheme') }}
+            </div>
+
+            {% include 'views/objects/newsletter.twig' with {'this': {
+              id: 'mc-embedded-subscribe-form',
+              mailchimp_account: fn('constant', 'MAILCHIMP_ACCOUNT'),
+              mailchimp_audience_id: fn('constant', 'MAILCHIMP_AUDIENCE_ID'),
+            }} only %}
+          </div>
+        </div>
+      </section>
+
+      {% block footer %}
+        <footer class="o-footer color-mid-background">
+          {% include 'objects/footer.twig' %}
+          {% include 'objects/attribution.twig' %}
+        </footer>
+      {% endblock %}
+    </div>
+
+    {% block scripts_footer %}{% endblock %}
+
+    {% include 'partials/strings-newsletter.twig' %}
+
+    <script type="text/javascript" nonce="{{ csp_script_nonce }}">
+      window.STYLESHEETS = {{ stylesheets|json_encode() }}
+    </script>
+
+    {{ wp_footer }}
+  </body>
+</html>

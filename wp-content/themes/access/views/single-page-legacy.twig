@@ -1,0 +1,102 @@
+{% extends "base.twig" %}
+
+{% block content %}
+<main class="color-light-background" id="content">
+  {% if alerts %}
+  <div class="px-2 screen-tablet:px-3 pt-2 screen-tablet:pt-3">
+    {% for alert in alerts %}
+      {% set class = loop.last ? '' : 'mb-2 screen-tablet:mb-3' %}
+
+      {% include 'components/alert.twig' with {this: alert, class: class} only %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <article>
+    <header class="c-header mt-3 print:mt-0">
+      <div>
+        <h1 class="c-header__descriptor">{{ post.title }}</h1>
+
+        {% set lead = post.get_field('field_58b480ca3081c') %} {# lead #}
+
+        <h2 class="c-header__information color__alt {% if lead %}mb-4{% endif %}">
+          {{ __('Last Updated', 'accessnyc-page') }} {{ post.post_modified|date('l, F jS, g:ia') }}
+        </h2>
+
+        {% if lead %}<div class="font-serif screen-tablet:text-large">{{ lead }}</div>{% endif %}
+      </div>
+    </header>
+
+    {% if post.custom.jump_navigation == '' or post.custom.jump_navigation == '1' %}
+    {% set sidebar = true %}
+    {% endif %}
+
+    <div class="wrap pt-2 screen-desktop:pt-3 {% if sidebar %}screen-desktop:layout-sidebar-gutter{% endif %}">
+      {% if sidebar %}
+      <aside>
+        <nav class="c-side-nav sticky top-0 pt-1 print:hidden border-none">
+          <ul>
+            {% for section in post.get_field('field_58b480f33081d') %} {# sections #}
+            {% if section.section_title %}
+            <li class="border-none pb-0">
+              <a href="#section-{{ loop.index }}">{{ section.section_title }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </nav>
+      </aside>
+      {% endif %}
+
+      <div class="o-content pt-2 screen-desktop:pt-0">
+        {% for section in post.get_field('field_58b480f33081d') %} {# sections #}
+        <section id="section-{{ loop.index }}">
+          {% if section.section_title %}
+          <h3 class="font-normal border-b pb-3 border-grey-light">{{ section.section_title }}</h3>
+          {% endif %}
+
+          {% if section.section_raw_content %}
+          {{ fn('do_shortcode', section.section_raw) }}
+          {% else %}
+          {{ section.section_content }}
+          {% endif %}
+        </section>
+        {% endfor %}
+
+        <footer class="pb-3">
+          <p class="text-grey-mid m-0">
+            {{ __('Last Updated', 'accessnyc-page') }} {{ post.post_modified|date('l, F jS, g:ia') }}
+          </p>
+        </footer>
+      </div>
+    </div>
+
+    <div class="sticky bottom-0 pointer-events-none z-10">
+      <div class="wrap pb-3 flex justify-end items-end flex-col screen-tablet:flex-row">
+        {% include 'components/web-share.twig' with {this: {
+          class: 'mb-1 screen-tablet:mb-0 screen-tablet:me-2',
+          fallback_class: 'right-0 bottom-100',
+          fallback_style: 'width: 458px; max-width: calc(100vw - 32px);',
+          share: {
+            title: (post.custom.og_title) ? post.custom.og_title : post.title,
+            text: (post.custom.web_share_text) ? post.custom.web_share_text : site.description,
+            url: fn('wp_get_shortlink')
+          }
+        }} only %}
+
+        {# <a class="btn btn-small btn-primary mb-1 screen-tablet:mb-0 screen-tablet:me-2">
+          <svg class="icon-2 icon-ui">
+            <use xlink:href="#icon-ui-mail"></use>
+          </svg>{{ __('Subscribe', 'accessnyctheme') }}
+        </a> #}
+
+        <a href="#content" class="btn btn-small text-blue pointer-events-auto">{{ __('Back to top', 'accessnyctheme') }}</a>
+      </div>
+
+      {% if alert_sitewide %}
+      {% include 'objects/alert-banner.twig' with {this: alert_sitewide, active: true} only %}
+      {% endif %}
+    </div>
+  </article>
+</main>
+{% endblock %}
